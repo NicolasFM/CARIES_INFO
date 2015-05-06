@@ -1,0 +1,318 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd"> 
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://java.sun.com/jsf/html"
+      xmlns:f="http://java.sun.com/jsf/core"
+     xmlns:ui="http://java.sun.com/jsf/facelets"
+      xmlns:p="http://primefaces.org/ui"> 
+
+<h:head>
+	<title>Proyecto Caries</title>
+</h:head>
+<body>
+	<h:form>
+ 
+        
+    
+    
+    <p:growl autoUpdate="true"/>
+ 	<p:panel header="Menú del Odontólogo" widgetVar="dlg" resizable="false">
+    <p:panelMenu style="width:300px">
+        <p:submenu label="Gestión de Pacientes">
+
+            <p:menuitem value="Crear Paciente" onclick="PF('dlg').show();"/>
+            <p:menuitem value="Ver lista de Pacientes"   onclick="PF('dlg2').show();"/>
+
+        </p:submenu>
+        <p:submenu label="Gestión de Odontogramas">
+            <p:menuitem value="Realizar Odontograma" onclick="PF('dlg3').show();"/>
+            <p:menuitem value="Consultar Odontograma" onclick="PF('dlg4').show();" />
+        </p:submenu>
+        <p:separator />
+        <p:submenu label="Reportes" >
+        <p:menuitem value="Generar Reporte" actionListener="#{menuUsMB.reportes}"/>
+        </p:submenu>
+    </p:panelMenu>
+    
+
+	<p:commandButton  actionListener="#{loginMB.logout}"
+								style="margin-right:20px;"
+                                oncomplete="logout(xhr, status, args)"
+                                value="Cerrar Sesión" />
+	</p:panel>
+	
+	</h:form>
+	<h:form>
+	<p:growl id="growl" sticky="true" showDetail="true" life="3000" />
+ 
+    <p:dialog header="Crear Paciente" widgetVar="dlg" resizable="false" position="380,48" width="500" height="580">
+        <h:panelGrid columns="2" cellpadding="5">
+            <h:outputLabel value="Nombre:" />
+            <p:inputText id="nompa" value="#{pacientesMB.nompa}"/>
+ 			<h:outputLabel value="Apellido:" />
+            <p:inputText id="apepa" value="#{pacientesMB.apepa}"/>
+            <h:outputLabel value="Identificación:" />
+            <p:inputText id="idepa" value="#{pacientesMB.idepa}"/>
+            <h:outputLabel value="Edad:" />
+            <p:inputText id="edadus"  value="#{pacientesMB.edadpa}"/>
+            <h:outputLabel for="generous" value="Género:" />
+            <p:selectOneMenu id="generous" value="#{pacientesMB.generopa}" style="width:140px">
+            <f:selectItem itemLabel="Masculino" itemValue="Masculino" />
+            <f:selectItem itemLabel="Femenino" itemValue="Femenino" />
+            </p:selectOneMenu>
+            <h:outputLabel value="Correo:" />
+            <p:inputText id="correous" value="#{pacientesMB.correopa}" />
+            <h:outputLabel value="Teléfono:" />
+            <p:inputText id="telus" value="#{pacientesMB.telpa}" />
+            <p:outputLabel for="ciudadus" value="Ciudad:" />
+            <p:inputText id="ciudadus" value="#{pacientesMB.ciudadpa}" />
+            <h:outputLabel value="Centro de Salud donde fue atendido:" />
+            <p:inputText id="csaludus"  value="#{pacientesMB.csaludpa}"/>
+            <p:outputLabel for="denticionus" value="Tipo de Dentición:" />
+        <p:selectOneMenu id="denticionus"  value="#{pacientesMB.denticionpa}" style="width:140px">
+            <f:selectItem itemLabel="Primaria" itemValue="Primaria" />
+            <f:selectItem itemLabel="Mixta" itemValue="Mixta" />
+            <f:selectItem itemLabel="Permanente" itemValue="Permanente" />
+        </p:selectOneMenu>
+        <p:outputLabel for="proyectospa" value="Proyecto:" />
+        <p:selectOneMenu id="proyectospa" value="#{pacientesMB.proyectospa}"  style="width:140px">
+            <f:selectItem itemLabel="Proyecto 01" itemValue="1" />
+            <f:selectItem itemLabel="Proyecto 02" itemValue="2" />
+            <f:selectItem itemLabel="Proyecto 03" itemValue="3" />
+        </p:selectOneMenu>
+ 
+            <f:facet name="footer">
+                <p:commandButton value="Crear" update="growl" actionListener="#{pacientesMB.addPaciente()}"
+                                 oncomplete="handlePacientesMBRequest(xhr, status, args)" />
+            </f:facet>  
+        </h:panelGrid>
+    </p:dialog>
+    
+    
+</h:form>
+<h:form>
+<p:growl id="growl2" sticky="true" showDetail="true" life="2600" />
+ 
+    <p:dialog header="Lista de Pacientes" widgetVar="dlg2" resizable="false" position="80,48" width="1480" height="550">
+        <h:panelGrid columns="2" cellpadding="5">
+            <p:dataTable id="paciente" var="paciente" editable="true"
+        	value="#{pacientesMB.pacientesList}" style="width: 100%" 
+        	emptyMessage="No hay pacientes registrados" paginator="true"
+        	rows="4" paginatorPosition="top"
+        	paginatorTemplate="{CurrentPageReport}  {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {RowsPerPageDropdown}">
+        	
+        	<p:ajax event="rowEdit" update="@form" listener="#{pacientesMB.updatePaciente()}"/>
+        	
+        	<p:column>
+        		<f:facet name="header"><h:outputText value="Nombre" /></f:facet>
+        		<p:cellEditor>
+        		<f:facet name="output">
+        		<h:outputText value="#{paciente.nombresApellidos}"/>
+        		</f:facet>
+        		<f:facet name="input">
+        		<p:inputText  value="#{paciente.nombresApellidos}" style="width:100%"/>
+        		</f:facet>
+        		</p:cellEditor>
+        	</p:column>
+        	
+        	<p:column>
+        		<f:facet name="header"><h:outputText value="Identificación" /></f:facet>
+        		<p:cellEditor>
+        		<f:facet name="output">
+        		<h:outputText value="#{paciente.identificacion}"/>
+        		</f:facet>
+        		<f:facet name="input">
+        		<p:inputText  value="#{paciente.identificacion}" style="width:100%"/>
+        		</f:facet>
+        		</p:cellEditor>
+        	</p:column>
+        	
+        	<p:column>
+        		<f:facet name="header"><h:outputText value="Teléfono" /></f:facet>
+        		<p:cellEditor>
+        		<f:facet name="output">
+        		<h:outputText value="#{paciente.telefono}"/>
+        		</f:facet>
+        		<f:facet name="input">
+        		<p:inputText  value="#{paciente.telefono}" style="width:100%"/>
+        		</f:facet>
+        		</p:cellEditor>
+        	</p:column>
+        	
+        	<p:column>
+        		<f:facet name="header"><h:outputText value="Correo" /></f:facet>
+        		<p:cellEditor>
+        		<f:facet name="output">
+        		<h:outputText value="#{paciente.correo}"/>
+        		</f:facet>
+        		<f:facet name="input">
+        		<p:inputText  value="#{paciente.correo}" style="width:100%"/>
+        		</f:facet>
+        		</p:cellEditor>
+        	</p:column>
+        	
+        	<p:column>
+        		<f:facet name="header"><h:outputText value="Edad" /></f:facet>
+        		<p:cellEditor>
+        		<f:facet name="output">
+        		<h:outputText value="#{paciente.edad}"/>
+        		</f:facet>
+        		<f:facet name="input">
+        		<p:inputText  value="#{paciente.edad}" style="width:100%"/>
+        		</f:facet>
+        		</p:cellEditor>
+        	</p:column>
+        	
+        	<p:column>
+        		<f:facet name="header"><h:outputText value="Género" /></f:facet>
+        		<p:cellEditor>
+        		<f:facet name="output">
+        		<h:outputText value="#{paciente.genero}"/>
+        		</f:facet>
+        		<f:facet name="input">
+        		<p:inputText  value="#{paciente.genero}" style="width:100%"/>
+        		</f:facet>
+        		</p:cellEditor>
+        	</p:column>
+        	
+        	<p:column>
+        		<f:facet name="header"><h:outputText value="ID Proyecto" /></f:facet>
+        		<p:cellEditor>
+        		<f:facet name="output">
+        		<h:outputText value="#{paciente.idProyecto}"/>
+        		</f:facet>
+        		<f:facet name="input">
+        		<p:inputText  value="#{paciente.idProyecto}" style="width:100%"/>
+        		</f:facet>
+        		</p:cellEditor>
+        	</p:column>
+        	
+        	<p:column>
+        		<f:facet name="header"><h:outputText value="Ciudad" /></f:facet>
+        		<p:cellEditor>
+        		<f:facet name="output">
+        		<h:outputText value="#{paciente.ciudad}"/>
+        		</f:facet>
+        		<f:facet name="input">
+        		<p:inputText  value="#{paciente.ciudad}" style="width:100%"/>
+        		</f:facet>
+        		</p:cellEditor>
+        	</p:column>
+        	
+        	<p:column>
+        		<f:facet name="header"><h:outputText value="Punto Atención" /></f:facet>
+        		<p:cellEditor>
+        		<f:facet name="output">
+        		<h:outputText value="#{paciente.lugarAtencion}"/>
+        		</f:facet>
+        		<f:facet name="input">
+        		<p:inputText  value="#{paciente.lugarAtencion}" style="width:100%"/>
+        		</f:facet>
+        		</p:cellEditor>
+        	</p:column>
+        	
+        	<p:column>
+        		<f:facet name="header"><h:outputText value="Dentición" /></f:facet>
+        		<p:cellEditor>
+        		<f:facet name="output">
+        		<h:outputText value="#{paciente.denticion}"/>
+        		</f:facet>
+        		<f:facet name="input">
+        		<p:inputText  value="#{paciente.denticion}" style="width:100%"/>
+        		</f:facet>
+        		</p:cellEditor>
+        	</p:column>
+        	
+        	<p:column>
+        		<f:facet name="header"><h:outputText value="Editar " /></f:facet>
+           		<p:rowEditor />
+       		</p:column>
+       		
+       		<p:column>
+        		<f:facet name="header"><h:outputText value="Eliminar " /></f:facet>
+        		<p:commandButton value="Eliminar" actionListener="#{pacientesMB.borrarPaciente(paciente)}"/>
+       		</p:column>
+        	</p:dataTable>
+        </h:panelGrid>
+    </p:dialog>
+</h:form>
+<h:form>
+	<p:growl id="growl3" sticky="true" showDetail="true" life="3000" />
+ 
+    <p:dialog header="Crear Odontograma" widgetVar="dlg3" resizable="false" position="380,48" width="500" height="200">
+        <h:panelGrid columns="2" cellpadding="5">
+           <h:outputLabel value="Identificación del Paciente:" />
+            <p:inputText id="idepa" value="#{pacientesMB.idepa}"/>
+ 
+            <f:facet name="footer">
+                <p:commandButton value="Crear" update="growl3" actionListener="#{pacientesMB.crearOdon}"
+                                 oncomplete="handlePacientesMBRequest(xhr, status, args)" />
+            </f:facet>  
+        </h:panelGrid>
+    </p:dialog>
+    
+    
+</h:form>
+
+<h:form>
+	<p:growl id="growl4" sticky="true" showDetail="true" life="3000" />
+ 
+    <p:dialog header="Consultar Odontograma" widgetVar="dlg4" resizable="false" position="380,48" width="500" height="200">
+        <h:panelGrid columns="2" cellpadding="5">
+            <h:outputLabel value="Identificación del Paciente:" />
+            <p:inputText id="idepa" value="#{pacientesMB.idepa}"/>
+ 
+            <f:facet name="footer">
+                <p:commandButton value="Consultar" update="growl4" actionListener="#{pacientesMB.consultar}"
+                                 oncomplete="handlePacientesMBRequest(xhr, status, args)" />
+            </f:facet>  
+        </h:panelGrid>
+    </p:dialog>
+    
+    
+</h:form>
+
+
+<script type="text/javascript">
+    function handleGestionUsRequest(xhr, status, args) {
+        if(args.validationFailed) {
+            PF('dlg').jq.effect("shake", {times:5}, 100);
+
+        }
+        else {
+            PF('dlg').hide();
+            $('#loginLink').fadeOut();
+        }
+    }
+    function handleGestionUs2Request(xhr, status, args) {
+        if(args.validationFailed) {
+            PF('dlg2').jq.effect("shake", {times:5}, 100);
+
+        }
+        else {
+            PF('dlg2').hide();
+            $('#loginLink').fadeOut();
+        }
+    }
+    function handleGestionUs3Request(xhr, status, args) {
+        if(args.validationFailed) {
+            PF('dlg3').jq.effect("shake", {times:5}, 100);
+
+        }
+        else {
+            PF('dlg3').hide();
+            $('#loginLink').fadeOut();
+        }
+    }
+    function handleGestionUs3Request(xhr, status, args) {
+        if(args.validationFailed) {
+            PF('dlg4').jq.effect("shake", {times:5}, 100);
+
+        }
+        else {
+            PF('dlg4').hide();
+            $('#loginLink').fadeOut();
+        }
+    }
+</script>
+ </body>	
+</html>
